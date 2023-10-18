@@ -180,7 +180,7 @@ DICAS:
 
 SELECT TOP 10 productId
 FROM production.Product
-ORDER BY listPrice DESC;
+ORDER BY ListPrice DESC;
 
 -- DESAFIO 10
 -- OBTER O NOME E NUMERO DO PRODUTO DOS PRODUTOS QUE TEM O productId entre 1~4
@@ -191,4 +191,75 @@ ORDER BY productId ASC;
 
 
 
--- AULA 7: BETWEEN...
+-- AULA 7: BETWEEN
+-- BETWEEN: É USADO PARA ENCONTRAR VALOR ENTRE UM VALOR MÍNIMO E VALOR MÁXIMO
+-- valor BETWEEN mínimo AND máximo;
+SELECT *
+FROM production.Product
+WHERE ListPrice BETWEEN 1000 AND 1500;
+
+-- LISTA O OPOSTO
+SELECT *
+FROM production.Product
+WHERE ListPrice NOT BETWEEN 1000 AND 1500;
+
+SELECT *
+FROM HumanResources.Employee
+WHERE HireDate BETWEEN '2009-01-01' AND '2010-01-01';
+ORDER BY HireDate;
+
+
+
+
+-- AULA 8: IN
+-- O OPERADOR 'IN' É USADO JUNTAMENTE AO WHERE!
+-- PARA VERIFICAR SE UM VALOR CORRESPONDEM COM QUALQUER VALOR PASSADO NA LISTA DE VALORES
+-- valor IN (valor1, valor2)
+-- valor IN (SELECT valor FROM nomeDaTabela)
+SELECT *
+FROM person.Person
+WHERE BusinessEntityID IN (2, 7, 13);
+
+-- ACIMA MOSTRA UMA MANEIRA SIMPLIFICADA COM O COMANDO IN
+
+SELECT *
+FROM person.Person
+WHERE BusinessEntityID = 2 OR BusinessEntityID = 7 OR BusinessEntityID = 13;
+
+
+
+
+-- AULA 9: LIKE
+SELECT *
+FROM person.Person
+WHERE FirstName LIKE 'ovi%';
+
+SELECT *
+FROM person.Person
+WHERE FirstName LIKE '%to';
+
+SELECT *
+FROM person.Person
+WHERE FirstName LIKE '%essa%';
+
+-- AQUI SUBSTITUI APENAS UM CARACTERE
+SELECT *
+FROM person.Person
+WHERE FirstName LIKE '%ro_';
+
+SELECT *
+FROM person.Person
+WHERE FirstName LIKE '%rO_';
+
+
+
+
+-- AULA 10: DESAFIOS FUNDAMENTOS SQL
+-- QUANTOS PRODUTOS TEMOS CADASTRADO NO SISTEMA QUE CUSTAM MAIS QUE 1500 DÓLARES?
+-- TERÁ QUE USAR A TABELA production.Product
+-- TERÁ QUE USAR COUNT E WHERE E MAIS ALGUM OPERADOR QUE COMPARAÇÃO
+SELECT COUNT (ListPrice)
+FROM production.Product
+WHERE ListPrice > 1500;
+
+-- ...
