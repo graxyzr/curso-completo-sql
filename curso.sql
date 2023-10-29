@@ -282,7 +282,7 @@ SELECT DISTINCT(city)
 FROM person.Address;
 
 -- QUANTOS PRODUTOS VERMELHOS TEM PREÇO ENTRE 500 A 1000 DÓLARES?
--- TERÁ QUE USAR A TABELA production.Product
+-- TERÁ QE USAR A TABELA production.Product
 -- TERÁ QUE USAR WHERE, BETWEEN
 SELECT COUNT(*)
 FROM production.Product
@@ -353,7 +353,7 @@ FROM Sales.SalesOrderDetail
 WHERE SpecialOfferID = 9;
 
 -- VAMOS DIZER QUE EU QUERO SABER QUANTOS CADA PRODUTO FOI VENDIDO ATÉ HOJE
-SELECT * FROM Sales.SalesOrderDetail
+SELECT * FROM Sales.SalesOrderDetail;
 
 -- AGRUPOU TODOS OS PRODUTOS DE 707 E QUANTAS VEZES ELE APARECE NO BANCO DE DADOS
 SELECT ProductId, COUNT(ProductId) AS "CONTAGEM"
@@ -378,7 +378,7 @@ GROUP BY color;
 -- USAR GROUP BY E UMA FUNÇÃO DE AGREGAÇÃO
 SELECT MiddleName, COUNT(MiddleName) AS "quantidade"
 FROM Person.Person
-GROUP BY MiddleName
+GROUP BY MiddleName;
 
 -- EU PRECISO SABER EM MÉDIA QUAL É A QUANTIDADE (quantity) QUE CADA PRODUTO É VENDIDO NA LOJA.
 -- DICAS:
@@ -410,5 +410,143 @@ GROUP BY ProductID;
 
 
 
--- AULA 13: HAVING
+-- AULA 13: HAVING + DESAFIOS
+-- O HAVING É BASICAMENTE MUITO UTILIZADO EM JUNÇÃO COM O GROUP BY PARA FILTRAR RESULTADOS DE UM AGRUPAMENTO
+-- É BASICAMENTE UM WHERE PARA DADOS AGRUPADOS
+SELECT coluna1, funcaoAgregacao(coluna2)
+FROM nomeTabela
+GROUP BY coluna1
+HAVING condicao;
+
+-- A DIFERENÇA ENTRE HAVING E WHERE É:
+-- O GROUP BY É APLICADO DEPOIS QUE OS DADOS JÁ FORAM AGRUPADOS, ENQUANTO O WHERE É APLICADO ANTES DOS DADOS SEREM AGRUPADOS
+
+-- VAMOS DIZER QUE QUEREMOS SABER QUAIS NOMES NO SISTEMA TEM UMA OCORRÊNCIA MAIOR QUE 10 VEZES
+SELECT FirstName, COUNT(FirstNamed) AS "quantidade"
+FROM person.Person
+GROUP BY FirstName
+HAVING COUNT(FirstName) > 10;
+
+SELECT TOP 10 *
+FROM Sales.SalesOrderDetail;
+
+SELECT productid, SUM(linetotal) AS "TOTAL"
+FROM Sales.SalesOrderDetail
+GROUP BY ProductID
+HAVING SUM(linetotal) BETWEEN 162000 AND 500000;
+
+-- VOCÊ QUER SABER QUAIS NOMES NO SISTEMA TEM UMA OCORRÊNCIA MAIOR QUE 10 VEZES, PORÉM SOMENTE ONDE O TÍTULO É 'Mr.'
+SELECT FirstName, COUNT(FirstNamed) AS "quantidade"
+FROM person.Person
+WHERE Title = 'Mr.'
+GROUP BY FirstName
+HAVING COUNT(FirstName) > 10;
+
+-- DESAFIO 12
+-- 1. ESTAMOS QUERENDO IDENTIFICAR AS PROVÍNCIAS (stateProvinceId) COM O MAIOR NÚMERO DE CADASTROS NO NOSSO SISTEMA, ENTÃO É PRECISO ENCONTRAR QUAIS PROVÍNCIAS (stateProvinceId) ESTÃO REGISTRADAS NO BANCO DE DADOS MAIS QUE 1000 VEZES
+-- DICAS:
+-- TABELA person.address
+-- USAR HAVING, COUNT, E OPERADORES MATEMÁTICOS
+SELECT StateProvinceID, COUNT(stateprovinceid) AS "quantidade"
+FROM person.Address
+GROUP BY StateProvinceID
+HAVING COUNT(stateprovinceid) > 1000;
+
+-- 2. SENDO QUE SE TRATA DE UMA MULTINACIONAL OS GERENTES QUEREM SABER QUAIS PRODUTOS (productId) não estão trazendo em média no mínimo 1 milhão em total de vendas (lineTotal)
+-- DICAS:
+-- TABELA sales.salesorderdetail
+-- USAR HAVING, COUNT, E OPERADORES MATEMÁTICOS
+SELECT ProductID, AVG(linetotal)
+FROM sales.SalesOrderDetail
+GROUP BY ProductID
+HAVING AVG(linetotal) < 1000000;
+
+
+
+
+-- AULA 14: AS + DESAFIOS
+-- O AS PODE NOMEAR COLUNAS
+SELECT TOP 10 ListPrice AS "Preço do Produto"
+FROM Production.Product;
+
+SELECT TOP 10 AVG(ListPrice) AS "Preço Médio"
+FROM Production.Product;
+
+-- 1. ENCONTRAR O FirstName E LastName person.person
+SELECT TOP 10 FirstName AS "Nome", LastName AS "Sobrenome"
+FROM person.person;
+
+-- 2. ProductNumber DA TABELA production.product "Número do Produto"
+SELECT TOP 10 ProductNumber AS "Número do Produto"
+FROM Production.Product;
+
+-- 3. sales.salesorderdetail unitPrice "Preço Unitário"
+SELECT unitPrice AS "Preço Unitário"
+FROM sales.SalesOrderDetail;
+
+
+
+
+-- AULA 15: INNER JOIN + DESAFIOS
+-- O INNER JOIN COMPARA CADA LINHA DA TABELA A COM AS LINHAS DA TABELA B PARA ENCONTRAR TODOS OS PARES DE LINHAS QUE SATISFAZEM A CONDIÇÃO DE JUNÇÃO
+-- EXISTEM TRÊS TIPOS GERAIS DE JOINS:
+-- - INNER JOIN
+-- - OUTER JOIN
+-- - SELF-JOIN
+SELECT C.ClienteId, C.Nome, E.Rua, E.Cidade
+FROM Cliente C
+INNER JOIN Endereco E ON E.EnderecoId = C.EnderecoId;
+
+-- BusinessEntityId, FirstName, LastName, EmailAddress
+SELECT p.BusinessEntityID, p.FirstName, p.LastName, pe.EmailAddress
+FROM Person.Person AS P
+INNER JOIN Person.EmailAddress PE ON p.BusinessEntityID = pe.BusinessEntityID;
+
+-- VAMOS DIZER QUE NÓS QUEREMOS OS NOMES DOS PRODUTOS E AS INFORMAÇÕES DE SUAS SUBCATEGORIAS
+-- ListPrice, Nome do Produto, Nome da Subcategoria
+SELECT pr.ListPrice, pr.Name, pc.Name
+FROM Production.Product Pr
+INNER JOIN Production.ProductSubcategory PC ON PC.ProductSubcategoryID = pr.ProductSubcategoryID;
+
+-- JUNTAR INFORMAÇÕES DE UMA TABELA COM OUTRA
+SELECT TOP 10 *
+FROM Person.BusinessEntityAddress;
+
+SELECT TOP 10 *
+FROM Person.Address;
+
+SELECT TOP 10 *
+FROM Person.BusinessEntityAddress BA
+INNER JOIN Person.Address PA ON PA.AddressID = BA.AddressID;
+
+-- DESAFIO 13
+SELECT TOP 10 *
+FROM person.PhoneNumberType;
+
+SELECT TOP 10 *
+FROM person.PersonPhone;
+
+-- QUERO QUE INCLUA:
+-- BusinessEntityId, Name, PhoneNumberTypeId, PhoneNumber
+SELECT pp.BusinessEntityId, pt.name, pt.PhoneNumberTypeId, pp.PhoneNumber
+FROM person.PersonPhone PP
+INNER JOIN Person.PhoneNumberType PT ON PT.PhoneNumberTypeID = pp.PhoneNumberTypeID;
+
+
+SELECT TOP 10 *
+FROM person.stateprovince;
+
+SELECT TOP 10 *
+FROM person.address;
+
+-- QUERO QUE INCLUA:
+-- AddressId, City, StateProvinceId, Nome do Estado
+SELECT TOP 10 PA.AddressID, PA.City, PS.StateProvinceID, PS.Name
+FROM Person.Address PA
+INNER JOIN Person.StateProvince PS ON PS.StateProvinceID = PA.StateProvinceID;
+
+
+
+
+-- AULA 17: TIPOS DE JOINS + DESAFIOS
 -- ...
